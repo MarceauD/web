@@ -46,10 +46,67 @@
 </head>
 <body>
     <div class='container'>
-        <h1>Liste des Ingrédients</h1>
-        <ul>
-            <li>Sauce tomate</li><li>Mozzarella</li><li>Gorgonzola</li><li>Jambon</li><li>Pepperoni</li><li>Bacon</li>
+        <h1>Liste des ingrédients</h1>
+
+        <ul id="ingredient-list">
+            <li>Sauce tomate</li>
+            <li>Mozzarella</li>
+            <li>Gorgonzola</li>
+            <li>Jambon</li>
+            <li>Pepperoni</li>
+            <li>Bacon</li>
         </ul>
+
+        <form id="ingredient-form">
+            <label for="ingredient">Ajouter un ingrédient</label>
+            <input type="text" id="ingredient" name="ingredient" required>
+            <br>
+            <input value="Ajouter" type="submit" />
+        </form>
     </div>
+
+    <script>
+        const form = document.getElementById('ingredient-form');
+        const ingredientInput = document.getElementById('ingredient');
+        const ingredientList = document.getElementById('ingredient-list');
+
+        // Charger les ingrédients à partir du localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedIngredients = JSON.parse(localStorage.getItem('ingredients')) || [];
+            savedIngredients.forEach(ingredient => {
+                const listItem = document.createElement('li');
+                listItem.textContent = ingredient;
+                ingredientList.appendChild(listItem);
+            });
+        });
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            const newIngredient = ingredientInput.value.trim();
+
+            if (newIngredient === '') {
+                alert('Veuillez entrer un ingrédient.');
+                return;
+            }
+
+            const existingIngredients = Array.from(ingredientList.querySelectorAll('li'))
+                                            .map(li => li.textContent.toLowerCase());
+
+            if (existingIngredients.includes(newIngredient.toLowerCase())) {
+                alert('Cet ingrédient est déjà dans la liste.');
+            } else {
+                const newListItem = document.createElement('li');
+                newListItem.textContent = newIngredient;
+                ingredientList.appendChild(newListItem);
+
+                // Sauvegarder la liste dans le localStorage
+                const updatedIngredients = [...existingIngredients.map(i => i.toLowerCase()), newIngredient.toLowerCase()];
+                localStorage.setItem('ingredients', JSON.stringify(updatedIngredients));
+
+                ingredientInput.value = ''; // Réinitialise le champ de saisie
+            }
+        });
+    </script>
 </body>
 </html>
